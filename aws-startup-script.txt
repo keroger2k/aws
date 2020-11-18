@@ -1,1 +1,33 @@
-aws ec2 create-key-pair --key-name MyKeyPair --query 'KeyMaterial' --output text > MyKeyPair.pem
+# Creating a new key pair
+
+aws ec2 create-key-pair --key-name 20201118-key-01 --output text > 20201118-key-01.pem
+
+# Creating a new security group
+# Created: sg-067f1f9e2d14a8bf4
+
+aws ec2 create-security-group --group-name linux-server-ssh --description "Security group to all ssh" --vpc-id vpc-015071b1c0345bb57
+
+# Adding SSH Rule to Security Group
+
+aws ec2 authorize-security-group-ingress --group-name linux-server-ssh --protocol tcp --port 22 --cidr 206.225.78.0/24
+
+# Create new subnet
+
+aws ec2 create-subnet --vpc-id vpc-015071b1c0345bb57 --cidr-block 172.31.1.0/24
+
+# Create Elastic IP
+# eipalloc-057d0de6b6e4eded3
+
+aws ec2 allocate-address
+
+
+# Create EC2 instance
+# i-0340ccd2e56bb2e93
+
+aws ec2 run-instances --image-id ami-04bf6dcdc9ab498ca --count 1 --instance-type t2.micro --key-name 20201118-key-01 --security-group-ids sg-067f1f9e2d14a8bf4 --subnet-id subnet-09056ff4a639ebc21
+
+# Terminate Instance
+aws ec2 terminate-instances --instance-ids i-5203422c
+
+# Associate Elastic IP with Instance
+aws ec2 associate-address --instance-id i-0340ccd2e56bb2e93 --allocation-id eipalloc-057d0de6b6e4eded3
