@@ -20,14 +20,29 @@ aws ec2 create-subnet --vpc-id vpc-015071b1c0345bb57 --cidr-block 172.31.1.0/24
 
 aws ec2 allocate-address
 
-
 # Create EC2 instance
 # i-0340ccd2e56bb2e93
 
-aws ec2 run-instances --image-id ami-04bf6dcdc9ab498ca --count 1 --instance-type t2.micro --key-name 20201118-key-01 --security-group-ids sg-067f1f9e2d14a8bf4 --subnet-id subnet-09056ff4a639ebc21
+aws ec2 run-instances --image-id ami-04bf6dcdc9ab498ca --count 1 --instance-type t2.micro --key-name 20201118-key-01 --security-group-ids sg-0a4c8231553088084 --subnet-id subnet-09056ff4a639ebc21 --private-ip-address 172.31.1.50
 
-# Terminate Instance
-aws ec2 terminate-instances --instance-ids i-5203422c
+aws ec2 run-instances --image-id ami-04bf6dcdc9ab498ca --count 1 --instance-type t2.micro --key-name 20201118-key-01 --security-group-ids sg-0a4c8231553088084 --subnet-id subnet-09056ff4a639ebc21 --private-ip-address 172.31.1.51
+
+aws ec2 assign-private-ip-addresses --network-interface-id eni-099c3abdbe468f7aa --private-ip-addresses 172.31.1.50
+aws ec2 assign-private-ip-addresses --network-interface-id eni-0f8f60cc40656349b --private-ip-addresses 172.31.1.51
+
+# Terminate Instance 
+aws ec2 terminate-instances --instance-ids i-0a166161bd101b2a0
 
 # Associate Elastic IP with Instance
-aws ec2 associate-address --instance-id i-0340ccd2e56bb2e93 --allocation-id eipalloc-057d0de6b6e4eded3
+aws ec2 associate-address --instance-id i-0a166161bd101b2a0 --allocation-id eipalloc-057d0de6b6e4eded3
+
+aws ec2 release-address --allocation-id eipalloc-057d0de6b6e4eded3
+
+# Detached Internet Gateway
+aws ec2 detach-internet-gateway --vpc-id vpc-015071b1c0345bb57 --internet-gateway-id igw-014d40cea030a9640
+
+# Delete Internet Gateway
+aws ec2 delete-internet-gateway --internet-gateway-id igw-014d40cea030a9640
+
+# Delete VPC
+aws ec2 delete-vpc --vpc-id vpc-015071b1c0345bb57
